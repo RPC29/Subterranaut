@@ -1089,6 +1089,7 @@ GameObject:
   - component: {fileID: 1293354194}
   - component: {fileID: 1293354198}
   - component: {fileID: 1293354197}
+  - component: {fileID: 1293354199}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1112,14 +1113,11 @@ MonoBehaviour:
   bow: {fileID: 724992443}
   playspr: {fileID: 1293354195}
   bowspr: {fileID: 724992444}
-  move1: {fileID: -790083924, guid: d390ee6bd359b4d4995fc619214b3847, type: 3}
-  move2: {fileID: 620563762, guid: d390ee6bd359b4d4995fc619214b3847, type: 3}
-  move3: {fileID: 2001689109, guid: d390ee6bd359b4d4995fc619214b3847, type: 3}
-  move4: {fileID: -1846549215, guid: d390ee6bd359b4d4995fc619214b3847, type: 3}
   bow1: {fileID: 1525063346, guid: 9863aae49d8adbe4ea92179595d74911, type: 3}
   bow2: {fileID: 1177716482, guid: 9863aae49d8adbe4ea92179595d74911, type: 3}
   bow3: {fileID: -911714483, guid: 9863aae49d8adbe4ea92179595d74911, type: 3}
   bow4: {fileID: 709897166, guid: 9863aae49d8adbe4ea92179595d74911, type: 3}
+  playerSpeed: 0
   arow: {fileID: 7091673027522216452, guid: 73d376a74d1373741855e9cdb7d6a71d, type: 3}
   cam: {fileID: 519420031}
   health: 0
@@ -1231,6 +1229,27 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!95 &1293354199
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1293354193}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 31c300c35b822554c952dbfae623a299, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1982509446
 GameObject:
   m_ObjectHideFlags: 0

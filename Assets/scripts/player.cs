@@ -5,14 +5,12 @@ using UnityEngine;
 public class player : MonoBehaviour
 {
     GameObject playobj;
-    public GameObject sword;
-    public GameObject bow;
-    public SpriteRenderer playspr;
-    public SpriteRenderer bowspr;
-    public Sprite move1, move2, move3, move4;
+    public GameObject sword, bow;
+    public SpriteRenderer playspr, bowspr;
     public Sprite bow1, bow2, bow3, bow4;
-    int movetimer = 0;
-    bool moving = false;
+    public int playerSpeed;
+    Animator playerAnim;
+    
     int weapon = 0;
     // 0 - sword, 1 - bow
     int swordatking = 0;
@@ -24,47 +22,41 @@ public class player : MonoBehaviour
     public Camera cam;
     int paintimer = -1;
     public int health;
+    public GenerateDungeons gd;
 
     // Start is called before the first frame update
     void Start()
     {
-        playobj = this.gameObject;
+        Random.InitState(10);
+        playobj = gameObject;
         health = 100;
+        playerAnim = GetComponent<Animator>();
+        gd=GameObject.Find("DungeonGenerator").GetComponent<GenerateDungeons>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetAxisRaw("x") > 0)
-        {
-            playobj.transform.position += new Vector3(5 * Time.deltaTime, 0, 0);
-        }
-        if (Input.GetAxisRaw("x") < 0)
-        {
-            playobj.transform.position += new Vector3(-5 * Time.deltaTime, 0, 0);
-        }
-        if (Input.GetAxisRaw("y") > 0)
-        {
-            playobj.transform.position += new Vector3(0, 5 * Time.deltaTime, 0);
-        }
-        if (Input.GetAxisRaw("y") < 0)
-        {
-            playobj.transform.position += new Vector3(0, -5 * Time.deltaTime, 0);
-        }
-        if (Input.GetAxisRaw("x") == 0 && Input.GetAxisRaw("y") == 0) moving = false;
-        else moving = true;
+        if(Input.GetKeyDown(KeyCode.Space))gd.generateCorridors();
+        if(Input.GetKeyDown(KeyCode.RightShift))gd.generateRooms();
+        if(Input.GetKeyDown(KeyCode.Backspace))gd.clearTiles();
 
-        if (health < 1) Destroy(this.gameObject);
-        if (paintimer > 0)
-        {
-            paintimer--;
+        if(!(Input.GetAxisRaw("x") == 0 && Input.GetAxisRaw("y") == 0)) {//movement
+            playobj.transform.position+=new Vector3(Input.GetAxis("x") , Input.GetAxis("y"), 0).normalized* Time.deltaTime*playerSpeed;
+            if(!playerAnim.GetCurrentAnimatorStateInfo(0).IsName("PlayerWalk"))
+                playerAnim.SetTrigger("PlayerWalk");
         }
-        if (paintimer == 0)
-        {
-            playspr.color = new Color(1,1,1,1);
-            paintimer--;
-        }
+        else if(playerAnim.GetCurrentAnimatorStateInfo(0).IsName("PlayerWalk"))
+            playerAnim.SetTrigger("PlayerIdle");
 
+
+        if (health < 1) Destroy(this.gameObject); //health check
+
+
+        if (paintimer >= 0) paintimer--;
+        if (paintimer == -1)playspr.color = new Color(1,1,1,1); //reset player color
+
+        //sword
         if (Input.GetMouseButtonDown(0) && weapon == 0 && swordcooldown < 1)
         {
             swordatking = 20;
@@ -72,6 +64,8 @@ public class player : MonoBehaviour
             lookAt2D(sword, cam.ScreenToWorldPoint(Input.mousePosition));
             sword.transform.rotation = Quaternion.Euler(0, 0, sword.transform.rotation.eulerAngles.z - 30);
         }
+
+        //bow
         if (Input.GetMouseButtonDown(0) && weapon == 1)
         {
             bowstage = 1;
@@ -90,16 +84,10 @@ public class player : MonoBehaviour
             lookAt2D(bow, cam.ScreenToWorldPoint(Input.mousePosition));
         }
         else bow.SetActive(false);
-        if (Input.GetMouseButtonDown(1)) weapon++;
+        if (Input.GetMouseButtonDown(1)) weapon=((weapon+1)%2);
     }
     private void FixedUpdate()
     {
-        if (moving) movetimer++;
-        else movetimer = 0;
-        if ((movetimer / 10) % 4 == 0) playspr.sprite = move1;
-        if ((movetimer / 10) % 4 == 1) playspr.sprite = move2;
-        if ((movetimer / 10) % 4 == 2) playspr.sprite = move3;
-        if ((movetimer / 10) % 4 == 3) playspr.sprite = move4;
 
         if (swordatking > 0) swordatking--;
         if (swordcooldown > 0) swordcooldown--;
@@ -118,7 +106,6 @@ public class player : MonoBehaviour
         if (bowstage == 1) bowspr.sprite = bow2;
         if (bowstage == 2) bowspr.sprite = bow3;
         if (bowstage == 3) bowspr.sprite = bow4;
-        Debug.Log(bowstage);
     }
 
     public static void lookAt2D(GameObject a, Vector3 b)
@@ -128,14 +115,14 @@ public class player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.layer == 8 && paintimer < 0) 
+        if (collision.gameObject.layer == 8 && paintimer < 0) //fire
         {
             health -= ((power)(collision.gameObject.GetComponent("power"))).strength;
             paintimer = ((power)(collision.gameObject.GetComponent("power"))).strength * 3;
             playspr.color = new Color(0.6f, 0, 0, 1);
             Destroy(collision.gameObject);
         }
-        if (collision.gameObject.layer == 7 && paintimer < 0)
+        if (collision.gameObject.layer == 7 && paintimer < 0) // enemy
         {
             health -= ((power)(collision.gameObject.GetComponent("power"))).strength;
             paintimer = ((power)(collision.gameObject.GetComponent("power"))).strength * 3;
