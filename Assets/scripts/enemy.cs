@@ -7,7 +7,7 @@ public class enemy : MonoBehaviour
     public int type; //0-6 
     public int look; //0-??? 
     public int behaviour; //0-1 melee or ranged
-    public GameObject playobj;
+    GameObject playobj;
     public GameObject eneobj;
     public Sprite blub1, blub2;
     int ticks = 0;
@@ -20,6 +20,7 @@ public class enemy : MonoBehaviour
     void Start()
     {
         eneobj = this.gameObject;
+        playobj = GameObject.Find("Player");
         health = 50;
         basecol = eneobj.GetComponent<SpriteRenderer>().color;
     }
@@ -42,10 +43,7 @@ public class enemy : MonoBehaviour
                     if (!(ticks % 100 < 60 && ticks % 100 > 40)) eneobj.transform.position = Vector3.MoveTowards(eneobj.transform.position, playobj.transform.position, 1f * Time.deltaTime);
                 }
             }
-            if (look == 0) 
-            {
-                if (ticks % 30 == 0) eneobj.GetComponent<SpriteRenderer>().sprite = (eneobj.GetComponent<SpriteRenderer>().sprite == blub1) ? blub2 : blub1;
-            }
+
         }
         if (health < 1) Destroy(this.gameObject);
         if (paintimer > 0) 

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class player : MonoBehaviour
 {
+    [HideInInspector]
+    public List<List<List<Vector2>>> caves;
+
     GameObject playobj;
     public GameObject sword, bow;
     public SpriteRenderer playspr, bowspr;
@@ -32,13 +35,16 @@ public class player : MonoBehaviour
         health = 100;
         playerAnim = GetComponent<Animator>();
         gd=GameObject.Find("DungeonGenerator").GetComponent<GenerateDungeons>();
+
+        for(int i = 0; i<4; i++)
+            caves.Add(gd.generateCave(Random.value<0.5f,Random.value<0.5f));                
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))gd.generateCorridors();
-        if(Input.GetKeyDown(KeyCode.RightShift))gd.generateRooms();
+        if(Input.GetKeyDown(KeyCode.Space))gd.generateRooms();
         if(Input.GetKeyDown(KeyCode.Backspace))gd.clearTiles();
 
         if(!(Input.GetAxisRaw("x") == 0 && Input.GetAxisRaw("y") == 0)) {//movement

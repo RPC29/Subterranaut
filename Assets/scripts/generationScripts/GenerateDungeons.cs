@@ -14,23 +14,24 @@ public class GenerateDungeons : MonoBehaviour
     public int walkLength = 20;
     public bool startRandom=true;
 
-    [Header("Corridors")]
-    public int corLen = 15;
-    public int corCount=5;
-    public float roomPercent = 0.8f;
+
 
     [Header("BSP")]
+    public int minRoomNum = 10;
     public int minRoomX=4;
     public int minRoomY=4;
     public int dunWidth=20;
     public int dunHeight=20;
     public int offset=1;
     public bool randomWalkRooms = false;
+    public bool thickCorridor = false;
 
 
     [Header("Tile Stuff")]
-    public Tilemap floorTM, wallTM;  
-    public TileBase floorTile, wallTile;
+    public Tilemap floorTM;
+    public Tilemap wallTM;  
+    public TileBase floorTile;
+    public TileBase wallTile;
 
 
     List<Vector2> dirs = new List<Vector2>{
@@ -39,6 +40,54 @@ public class GenerateDungeons : MonoBehaviour
         new Vector2(0,-1),//down
         new Vector2(-1,0)//left
     };
+
+    public List<List<Vector2>> generateCave(bool randomW, bool thick){
+        List<BoundsInt> roomL = null;
+        List<List<Vector2>> everything = new List<List<Vector2>>();
+        int c = 0;
+        do{
+            if(c++>100)break;
+            roomL=BSP(new BoundsInt(new Vector3Int(-dunWidth/2, -dunHeight/2, 0), new Vector3Int(dunWidth, dunHeight, 0)));
+        }
+        while(roomL.Count<=minRoomNum);
+        HashSet<Vector2> floors = new HashSet<Vector2>();
+        if(!randomW){
+            foreach(var room in roomL) {
+                for(int j = offset; j<room.size.x-offset; j++)
+                    for(int i = offset; i<room.size.y-offset; i++)
+                        floors.Add((Vector2Int)room.min+new Vector2(j,i));
+            }
+        }
+        else{
+            foreach(var room in roomL){
+                var center = (Vector2Int)Vector3Int.RoundToInt(room.center);
+                foreach(var floor in generateRoom(center, iterations, walkLength)){
+                    if(floor.x >= room.xMin+offset && floor.x<=room.xMax-offset && floor.y>=room.yMin+offset && floor.y<=room.yMax+offset)
+                        floors.Add(floor);
+                }
+
+            }
+        }
+
+        List<Vector2Int> roomC = new List<Vector2Int>();
+        foreach(var room in roomL)
+            roomC.Add((Vector2Int)Vector3Int.RoundToInt(room.center));
+        
+        HashSet<Vector2> corridors = new HashSet<Vector2>();
+        var currRoomC = roomC[Random.Range(0,roomC.Count)];
+        roomC.Remove(currRoomC);
+        while(roomC.Count>0){
+            Vector2Int closest = findClosest(currRoomC, roomC);
+            roomC.Remove(closest);
+            corridors.UnionWith(createCorridor(currRoomC, closest, thick));
+            currRoomC=closest;
+        }
+        floors.UnionWith(corridors);
+        everything.Add(floors.ToList<Vector2>());
+        //add enemy spawn list and ore position list here
+        return everything;
+    }
+
 
 
     public HashSet<Vector2> generateRoom(Vector2 pos, int iteration, int walkLen){
@@ -98,57 +147,6 @@ public class GenerateDungeons : MonoBehaviour
             drawSingleTile(pos, wallTM, wallTile);
     }
 
-    public void generateCorridors(){
-        HashSet<Vector2> floors = new HashSet<Vector2>();
-        HashSet<Vector2> possibleRooms = new HashSet<Vector2>();
-
-        var cPos = Vector2.zero;
-        possibleRooms.Add(cPos);
-        for(int i = 0; i<corCount; i++){
-            var corridor = randomWalkCorridor(cPos);
-            cPos=corridor[corridor.Count-1];
-            possibleRooms.Add(cPos);
-            floors.UnionWith(corridor);   
-        }
-
-        HashSet<Vector2> rooms = new HashSet<Vector2>();
-        List<Vector2> roomsToCreate = possibleRooms.OrderBy(x =>  Random.value).Take(Mathf.RoundToInt(possibleRooms.Count*roomPercent)).ToList();
-        foreach(Vector2 room in roomsToCreate)
-            rooms.UnionWith(generateRoom(room, iterations, walkLength));//to be changed
-
-
-        HashSet<Vector2> deadends = new HashSet<Vector2>();
-        foreach(var pos in floors){
-            int neighb = 0;
-            foreach(var dir in dirs)if(floors.Contains(pos+dir))neighb++;
-            if(neighb==1)deadends.Add(pos);
-        }
-
-        //dealing with deadends
-        foreach(var pos in deadends)
-            if(!rooms.Contains(pos))rooms.UnionWith(generateRoom(pos, iterations, walkLength));
-        
-        floors.UnionWith(rooms);
-
-        visualizeFloor(floors);
-        createWalls(floors);
-    }
-    public List<Vector2> randomWalkCorridor(Vector2 sPos){
-        List<Vector2> corridor = new List<Vector2>();
-        var dir = dirs[Random.Range(0,dirs.Count)];
-        var cPos=sPos;
-
-        for(int i = 0; i<corLen; i++){
-            cPos+=dir;
-            corridor.Add(cPos);
-            corridor.Add(cPos+Vector2.Perpendicular(dir));
-            corridor.Add(cPos+Vector2.Perpendicular(dir)*-1);
-
-        }
-
-        return corridor;
-    }
-
 
     public List<BoundsInt> BSP(BoundsInt space){
         Queue<BoundsInt> roomsQ = new Queue<BoundsInt>();
@@ -159,17 +157,16 @@ public class GenerateDungeons : MonoBehaviour
             if(room.size.y>=minRoomY && room.size.x>=minRoomX){
                 if(Random.value<0.5 && room.size.y>=minRoomY*2){
                     var ySplit = Random.Range(1, room.size.y);
-                    roomsQ.Enqueue(new BoundsInt(room.min, new Vector3Int(room.min.x, ySplit, room.min.z))); 
+                    roomsQ.Enqueue(new BoundsInt(room.min, new Vector3Int(room.size.x, ySplit, room.size.z))); 
                     roomsQ.Enqueue(new BoundsInt(new Vector3Int(room.min.x, room.min.y+ySplit, room.min.z), new Vector3Int(room.size.x, room.size.y-ySplit, room.size.z))); 
                 }
                 else if(room.size.x>=minRoomX*2){
                     var xSplit = Random.Range(1, room.size.x);
-                    roomsQ.Enqueue(new BoundsInt(room.min, new Vector3Int(xSplit, room.min.y, room.min.z))); 
+                    roomsQ.Enqueue(new BoundsInt(room.min, new Vector3Int(xSplit, room.size.y, room.size.z))); 
                     roomsQ.Enqueue(new BoundsInt(new Vector3Int(room.min.x+xSplit, room.min.y, room.min.z), new Vector3Int(room.size.x-xSplit, room.size.y, room.size.z))); 
                 }
                 else//add as it is, cant be further divided
                     roomsL.Add(room);
-                
             }
         }
 
@@ -178,17 +175,88 @@ public class GenerateDungeons : MonoBehaviour
 
 
     public void generateRooms(){
-        var roomL = BSP(new BoundsInt(Vector3Int.zero, new Vector3Int(dunWidth, dunHeight, 0)));
-        HashSet<Vector2> floors = new HashSet<Vector2>();
-
-        foreach(var room in roomL) {
-            for(int j = offset; j<room.size.x-offset; j++)
-                for(int i = offset; i<room.size.y-offset; i++)
-                    floors.Add((Vector2Int)room.min+new Vector2(j,i));
+        List<BoundsInt> roomL = null;
+        int c = 0;
+        do{
+            if(c++>100)break;
+            roomL=BSP(new BoundsInt(new Vector3Int(-dunWidth/2, -dunHeight/2, 0), new Vector3Int(dunWidth, dunHeight, 0)));
         }
+        while(roomL.Count<=minRoomNum);
+        HashSet<Vector2> floors = new HashSet<Vector2>();
+        if(!randomWalkRooms){
+            foreach(var room in roomL) {
+                for(int j = offset; j<room.size.x-offset; j++)
+                    for(int i = offset; i<room.size.y-offset; i++)
+                        floors.Add((Vector2Int)room.min+new Vector2(j,i));
+            }
+        }
+        else{
+            foreach(var room in roomL){
+                var center = (Vector2Int)Vector3Int.RoundToInt(room.center);
+                foreach(var floor in generateRoom(center, iterations, walkLength)){
+                    if(floor.x >= room.xMin+offset && floor.x<=room.xMax-offset && floor.y>=room.yMin+offset && floor.y<=room.yMax+offset)
+                        floors.Add(floor);
+                }
+
+            }
+        }
+
+        List<Vector2Int> roomC = new List<Vector2Int>();
+        foreach(var room in roomL)
+            roomC.Add((Vector2Int)Vector3Int.RoundToInt(room.center));
+        
+        HashSet<Vector2> corridors = new HashSet<Vector2>();
+        var currRoomC = roomC[Random.Range(0,roomC.Count)];
+        roomC.Remove(currRoomC);
+        while(roomC.Count>0){
+            Vector2Int closest = findClosest(currRoomC, roomC);
+            roomC.Remove(closest);
+            corridors.UnionWith(createCorridor(currRoomC, closest, thickCorridor));
+            currRoomC=closest;
+        }
+        floors.UnionWith(corridors);
+         
 
         visualizeFloor(floors);
         createWalls(floors);
+    }
+
+    public Vector2Int findClosest(Vector2Int currRoomC, List<Vector2Int> roomC){
+        Vector2Int closest = Vector2Int.zero;
+        float length = float.MaxValue;
+        foreach(var pos in roomC){
+            float currLen = Vector2.Distance(pos, currRoomC);
+            if(currLen<length){
+                length=currLen;
+                closest=pos;
+            }
+        }
+        return closest;
+    }
+
+    public HashSet<Vector2> createCorridor(Vector2Int currRoomC, Vector2Int closest, bool thick){
+        HashSet<Vector2> corridor = new HashSet<Vector2>();
+        var position = currRoomC;
+        corridor.Add(position);
+        while(position.y!=closest.y){
+            if(closest.y>position.y)position+=Vector2Int.up;
+            else position+=Vector2Int.down;
+            corridor.Add(position);
+            if(thick){
+                corridor.Add(position+Vector2Int.right);
+                corridor.Add(position+Vector2Int.left);
+            }
+        }
+        while(position.x!=closest.x){
+            if(closest.x>position.x)position+=Vector2Int.right;
+            else position+=Vector2Int.left;
+            corridor.Add(position);
+            if(thick){
+                corridor.Add(position+Vector2Int.up);
+                corridor.Add(position+Vector2Int.down);
+            }
+        }
+        return corridor;
     }
 
 
