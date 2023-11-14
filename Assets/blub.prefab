@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5652926653633033556}
   - component: {fileID: 5652926653633033553}
   - component: {fileID: -5041449201312982908}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: blub
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,19 +97,19 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5652926653633033559}
-  m_BodyType: 1
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &5652926653633033555
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -149,14 +149,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
-  look: 0
   behaviour: 1
-  playobj: {fileID: 0}
-  eneobj: {fileID: 5652926653633033559}
-  blub1: {fileID: 2051534614, guid: 2e8af5994ba1b244c818b4453862d319, type: 3}
-  blub2: {fileID: 698866017, guid: 2e8af5994ba1b244c818b4453862d319, type: 3}
   health: 0
   fire: {fileID: 2787068355219857328, guid: 9f1eeaade4cbbcd40ace06d205e9a6b7, type: 3}
+  elec: {fileID: 2787068355219857328, guid: 7daa78fa2f02e994789e7e0c3cf92716, type: 3}
+  earth: {fileID: 2787068355219857328, guid: 9c544823e8223af46aea04b260aa1f89, type: 3}
+  enemyspeed: 0.3
 --- !u!114 &5652926653633033553
 MonoBehaviour:
   m_ObjectHideFlags: 0

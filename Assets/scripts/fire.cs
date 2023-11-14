@@ -11,15 +11,21 @@ public class fire : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        alivetime = 120;
+        alivetime = 240;
         this.transform.parent = null;
         playobj = GameObject.Find("Player");
+
+
+        this.gameObject.layer = (evil) ? 8 : 6;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (evil) this.transform.position = Vector3.MoveTowards(this.transform.position, playobj.transform.position, 1.5f * Time.deltaTime);
+        if (evil) this.transform.position = Vector3.MoveTowards(this.transform.position, playobj.transform.position, 4f * Time.deltaTime);
+        else this.transform.position = Vector3.MoveTowards(this.transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition), 20f * Time.deltaTime);
+
+        if (evil && this.gameObject.GetComponent<CapsuleCollider2D>().IsTouchingLayers(LayerMask.GetMask("weapon"))) { alivetime = -999; }
     }
 
     private void FixedUpdate()

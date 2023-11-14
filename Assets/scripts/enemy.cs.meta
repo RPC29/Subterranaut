@@ -3,7 +3,10 @@ guid: 3b6b9b51e85450e40b80a400b4de74be
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - eneobj: {instanceID: 0}
+  - fire: {fileID: 2787068355219857328, guid: 9f1eeaade4cbbcd40ace06d205e9a6b7, type: 3}
+  - elec: {fileID: 2787068355219857328, guid: 7daa78fa2f02e994789e7e0c3cf92716, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
