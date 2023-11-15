@@ -11,10 +11,12 @@ public class oreMine : MonoBehaviour
             if(gameObject.name.StartsWith("keyranium")){
                 //playerInv.add("keyranium");
                 //prompt("+1 Keyranium")
+                player.haskeyranium = true;
             }
             else{
                 //playerInv.add(player.minerals[player.currentworld]);
                 //prompt("+1 "+player.minerals[player.currentworld]);
+                player.mineralcount[player.currentworld]++;
             }
             Destroy(gameObject);
         }

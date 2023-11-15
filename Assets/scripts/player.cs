@@ -2,14 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Tilemaps;
 
 public class player : MonoBehaviour
 {
 
-    string[] minerals = { "Wood", "Diamond", "Ruby", "Sapphire", "Emerald", "Amethyst", "Topaz", "Opal", "Garnet", "Aquamarine", "Citrine", "Tanzanite", "Peridot", "Tourmaline", "Morganite", "Lapis Lazuli", "Malachite", "Pearl", "Onyx", "Pyrite", "Amber", "Jasper", "Moonstone", "Turquoise", "Rhodonite", "Azurite", "Hematite", "Sunstone", "Fluorite", "Apatite", "Obsidian", "Celestite", "Rhodochrosite", "Carnelian", "Serpentine", "Jade", "Larimar", "Zircon", "Agate", "Sardonyx", "Selenite", "Howlite", "Chalcedony", "Sphene", "Rhodonite", "Prehnite", "Kunzite", "Chrysoberyl", "Dioptase", "Cuprite", "Axinite", "Smithsonite", "Kyanite", "Danburite", "Rhodochrosite", "Staurolite", "Vanadinite", "Wulfenite", "Andalusite", "Chrysocolla", "Charoite", "Covellite", "Amazonite", "Smithsonite", "Aventurine", "Labradorite", "Rhodolite", "Titanite", "Axinite", "Sunstone", "Zoisite", "Iolite", "Uvarovite", "Petrified Wood", "Red Jasper", "Blue Lace Agate", "Blue Chalcedony", "Sodalite", "Fire Agate", "Poop", "Green Fluorite" };
-    string[] mineralcolours = { "#966f33", "#b9f2ff", "#9b111e", "#082567", "#50c878", "#9966cc", "#ffc87c", "#a8c3bc", "#733635", "#7fffd4", "#e4d00a", "#0d4684", "#90ee90", "#84c7c1", "#ffb6c1", "#1f4788", "#0bda51", "#f0e6d2", "#353839", "#d4af37", "#ffbf00", "#d73e4d", "#a9a9a9", "#40e0d0", "#733b4f", "#2e4b8c", "#434c4d", "#e29c45", "#8f72b8", "#5ba4cf", "#1a1a1a", "#b2dfee", "#ff9999", "#b31b1b", "#3cb371", "#00a86b", "#0077cc", "#f4f2e8", "#b8b396", "#ff4500", "#f0e6f6", "#e6e6e6", "#9cb3c2", "#ffd700", "#733b4f", "#b4cd9c", "#d8bfd8", "#e6b422", "#008080", "#b87333", "#7d7d7d", "#80c7c9", "#0f52ba", "#f8f8ff", "#ff9999", "#8b4513", "#7d2828", "#ffdb58", "#964b00", "#008080", "#551a8b", "#7e7e7e", "#00c4b0", "#80c7c9", "#007f00", "#6a5acd", "#b7410e", "#ff6347", "#7d7d7d", "#e29c45", "#3b5998", "#8674a1", "#3b5323", "#8b4513", "#d73e4d", "#b0c4de", "#6495ed", "#1e90ff", "#e25822", "#7a5901", "#4caf50" };
-    string[] colours = { "#ff6f61", "#6a0572", "#d45087", "#f06", "#1a2a6c", "#b4c5e4", "#ff85a1", "#fff4e0", "#2ec4b6", "#fea82f", "#ecf7f7", "#fdb827", "#04ab70", "#f0a6ca", "#fffdd0", "#96ded1", "#c06c84", "#93a8ac", "#ed6a5a", "#ffa69e", "#6a0572", "#f3722c", "#dbe2ef", "#f9f4f3", "#ffdbe1", "#e85d75", "#aa96da", "#f8f1f1", "#5f4b8b", "#ff5e78", "#8cc7a1", "#fae3d9", "#ed8a63", "#7ae582", "#00adb5", "#f38181", "#ffb997", "#ffcc5c", "#61c0bf", "#fff9eb", "#b3cdd1" };
+    public static string[] minerals = { "Wood", "Diamond", "Ruby", "Sapphire", "Emerald", "Amethyst", "Topaz", "Opal", "Garnet", "Aquamarine", "Citrine", "Tanzanite", "Peridot", "Tourmaline", "Morganite", "Lapis Lazuli", "Malachite", "Pearl", "Onyx", "Pyrite", "Amber", "Jasper", "Moonstone", "Turquoise", "Rhodonite", "Azurite", "Hematite", "Sunstone", "Fluorite", "Apatite", "Obsidian", "Celestite", "Rhodochrosite", "Carnelian", "Serpentine", "Jade", "Larimar", "Zircon", "Agate", "Sardonyx", "Selenite", "Howlite", "Chalcedony", "Sphene", "Rhodonite", "Prehnite", "Kunzite", "Chrysoberyl", "Dioptase", "Cuprite", "Axinite", "Smithsonite", "Kyanite", "Danburite", "Rhodochrosite", "Staurolite", "Vanadinite", "Wulfenite", "Andalusite", "Chrysocolla", "Charoite", "Covellite", "Amazonite", "Smithsonite", "Aventurine", "Labradorite", "Rhodolite", "Titanite", "Axinite", "Sunstone", "Zoisite", "Iolite", "Uvarovite", "Petrified Wood", "Red Jasper", "Blue Lace Agate", "Blue Chalcedony", "Sodalite", "Fire Agate", "Poop", "Green Fluorite" };
+    public static string[] mineralcolours = { "#966f33", "#b9f2ff", "#9b111e", "#082567", "#50c878", "#9966cc", "#ffc87c", "#a8c3bc", "#733635", "#7fffd4", "#e4d00a", "#0d4684", "#90ee90", "#84c7c1", "#ffb6c1", "#1f4788", "#0bda51", "#f0e6d2", "#353839", "#d4af37", "#ffbf00", "#d73e4d", "#a9a9a9", "#40e0d0", "#733b4f", "#2e4b8c", "#434c4d", "#e29c45", "#8f72b8", "#5ba4cf", "#1a1a1a", "#b2dfee", "#ff9999", "#b31b1b", "#3cb371", "#00a86b", "#0077cc", "#f4f2e8", "#b8b396", "#ff4500", "#f0e6f6", "#e6e6e6", "#9cb3c2", "#ffd700", "#733b4f", "#b4cd9c", "#d8bfd8", "#e6b422", "#008080", "#b87333", "#7d7d7d", "#80c7c9", "#0f52ba", "#f8f8ff", "#ff9999", "#8b4513", "#7d2828", "#ffdb58", "#964b00", "#008080", "#551a8b", "#7e7e7e", "#00c4b0", "#80c7c9", "#007f00", "#6a5acd", "#b7410e", "#ff6347", "#7d7d7d", "#e29c45", "#3b5998", "#8674a1", "#3b5323", "#8b4513", "#d73e4d", "#b0c4de", "#6495ed", "#1e90ff", "#e25822", "#7a5901", "#4caf50" };
+    public static string[] colours = { "#ff6f61", "#6a0572", "#d45087", "#f06", "#1a2a6c", "#b4c5e4", "#ff85a1", "#fff4e0", "#2ec4b6", "#fea82f", "#ecf7f7", "#fdb827", "#04ab70", "#f0a6ca", "#fffdd0", "#96ded1", "#c06c84", "#93a8ac", "#ed6a5a", "#ffa69e", "#6a0572", "#f3722c", "#dbe2ef", "#f9f4f3", "#ffdbe1", "#e85d75", "#aa96da", "#f8f1f1", "#5f4b8b", "#ff5e78", "#8cc7a1", "#fae3d9", "#ed8a63", "#7ae582", "#00adb5", "#f38181", "#ffb997", "#ffcc5c", "#61c0bf", "#fff9eb", "#b3cdd1" };
 
     public static int[] cavetype = { 0, 0, 0, 0 }; //decides cave types for every world
     public static int[] mineraltype = { 0, 0, 0, 0 }; //decides mineral types for every world
@@ -28,6 +29,16 @@ public class player : MonoBehaviour
 
     public List<List<List<Vector2>>> caves = new List<List<List<Vector2>>>();
 
+    public static int[] mineralcount = { 0, 0, 0, 0 };
+    public static bool haskeyranium = false;
+
+    public Text[] weaponshow;
+    public Slider healthbar;
+    public Image speakbox;
+    public Text speaktext;
+    public static bool speaking;
+    public static string dialogue;
+
     GameObject playobj;
     public Rigidbody2D playbody;
     public GameObject sword, bow, gun, boomeranger, spell;
@@ -38,6 +49,7 @@ public class player : MonoBehaviour
     
     int weapon = 0;
     // 0 - sword, 1 - bow, 2 - gun, 3 - boomerang, 4 - magic
+    public static string[] weaponnames = { "Sword", "Bow", "Gun", "Boomerang", "Magic" };
     int swordatking = 0;
     int swordcooldown = 0;
     int bowatking = 0;
@@ -80,7 +92,11 @@ public class player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        healthbar.value = 0.5f + ((float)health/200f);
+        if (speaking) speakbox.gameObject.SetActive(true);
+        else speakbox.gameObject.SetActive(false);
 
+        if (speaktext) speaktext.text = dialogue;
 
         if (!(Input.GetAxisRaw("x") == 0 && Input.GetAxisRaw("y") == 0))//movement
         {
@@ -187,7 +203,7 @@ public class player : MonoBehaviour
         if (weapon == 4)
         {
             //if (magiccooldown > 0) spell.SetActive(false);
-            //else spell.SetActive(true);
+            spell.SetActive(true);
             lookAt2D(spell, cam.ScreenToWorldPoint(Input.mousePosition));
         }
         else spell.SetActive(false);
@@ -210,9 +226,9 @@ public class player : MonoBehaviour
         if (bowatking > 0 && Input.GetMouseButton(0) && weapon == 1)
         {
             bowatking--;
-            if (betterbow) bowatking--;
-            if (betterbow) bowatking--;
-            if (betterbow) bowatking--;
+            bowatking--;
+            bowatking--;
+            bowatking--;
             bowstage = Mathf.Clamp(((80 - bowatking) / 20),1,3);
 
         }
@@ -275,6 +291,10 @@ public class player : MonoBehaviour
             cavetype[i] = Random.Range(0, 3); //you can change this part if you want just don't while loop crash the thing
             worldweapons[i] = Random.Range(0, 5);
         }
-        weapons[0] = worldweapons[Random.Range(1, 4)];
+        weapons[0] = 0;
+        for (int i = 0; i < 4; i++) 
+        {
+            
+        }
     }
 }
