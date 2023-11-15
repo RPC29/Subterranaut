@@ -20,7 +20,7 @@ public class boomerang : MonoBehaviour
 
         Color tempcol = Color.black;
         ColorUtility.TryParseHtmlString(player.mineralcolours[player.weaponminerals[3]], out tempcol);
-        this.gameObject.GetComponent<SpriteRenderer>().color = tempcol;
+        spinny.GetComponent<SpriteRenderer>().color = tempcol;
     }
 
     // Update is called once per frame

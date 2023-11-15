@@ -85,6 +85,11 @@ public class player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+        weaponcount = 1;
+        weaponminerals[4] = 0;
+
+
         gd=GetComponentInChildren<GenerateDungeons>();
         RandomizeWorld();
 
@@ -99,6 +104,9 @@ public class player : MonoBehaviour
         GameObject.DontDestroyOnLoad(this.gameObject);
 
         tutorial = true;
+
+        haskeyranium = false;
+        haskey = false;
 
         SceneManager.LoadScene(2);
 
@@ -134,10 +142,11 @@ public class player : MonoBehaviour
         }
 
         
-        if (health < 1) {
+        if (health <= 0) {
             //restart function --------------------------------------
-            playspr.color = new Color(0.6f,0,0,1);
-            this.enabled=false;
+            SceneManager.LoadScene(9);
+            Destroy(GameObject.Find("Musicer"));
+            Destroy(this.gameObject);
         } //health check
 
 
@@ -230,7 +239,7 @@ public class player : MonoBehaviour
                 Color tempcol = Color.black;
                 ColorUtility.TryParseHtmlString(player.mineralcolours[player.weaponminerals[3]], out tempcol);
                 boomeranger.GetComponent<SpriteRenderer>().color = tempcol;
-                if (boomerangs < 1) boomeranger.GetComponent<SpriteRenderer>().color = tempcol - new Color(0.1f, 0.1f, 0.1f, 0);
+                if (boomerangs < 1) boomeranger.GetComponent<SpriteRenderer>().color = new Color(0f, 0f, 0f, 0);
             }
         }
         else boomeranger.SetActive(false);
@@ -347,7 +356,9 @@ public class player : MonoBehaviour
             cavemusic[i] = Random.Range(0,5);
             cavetype[i] = Random.Range(0, 4); //you can change this part if you want just don't while loop crash the thing
             worldweapons[i] = Random.Range(0, 5);
-
+            recievedweapons[i] = false;
+            weaponminerals[i] = 0;
+            weapons[i] = 0;
             caves.Add(gd.generateCave(cavetype[currentworld], 0.005f * i));//change spawnrate as worldIndex increases
         }
         weapons[0] = 0;
