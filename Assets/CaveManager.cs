@@ -24,7 +24,7 @@ public class CaveManager : MonoBehaviour
             Instantiate(Random.value>=0.5?ore1:ore2, ore+new Vector2(0.5f,0.5f), Quaternion.identity);
         player.gameObject.transform.position = player.caves[currentworld][4][0];
         int dir = Random.Range(0, 5);
-        Instantiate(exit, (player.transform.position + new Vector3(0,-1, 0)), Quaternion.Euler(0,0,0) , null);
+        Instantiate(exit, (player.transform.position + new Vector3(0,0, 0)), Quaternion.Euler(0,0,0) , null);
         if(!player.haskeyranium && !player.haskey) Instantiate(oreKey, player.caves[currentworld][3][0]+new Vector2(0.5f,0.5f), Quaternion.identity);
         gd.visualizeCave(player.caves[currentworld][0], player.worldcolour[currentworld]);
         GameObject.Find("bgSquare").GetComponent<SpriteRenderer>().sprite=darkdirt;

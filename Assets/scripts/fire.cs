@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class fire : MonoBehaviour
 {
     public bool evil = true;
     public GameObject playobj;
+    public GameObject Light;
     int alivetime;
 
     // Start is called before the first frame update
@@ -38,6 +41,9 @@ public class fire : MonoBehaviour
             ColorUtility.TryParseHtmlString(player.mineralcolours[player.weaponminerals[4]], out a);
             this.gameObject.GetComponent<SpriteRenderer>().color = a;
         }
+
+        if (SceneManager.GetActiveScene().buildIndex == 3 || SceneManager.GetActiveScene().buildIndex == 8) Light.SetActive(true);
+        else Light.SetActive(false);
     }
 
     private void FixedUpdate()

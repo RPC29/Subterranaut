@@ -298,3 +298,4 @@ MonoBehaviour:
   playobj: {fileID: 0}
   enemyobj: {fileID: 0}
   sprite: {fileID: 177552370077325687}
+  Light: {fileID: 775652039646637368}

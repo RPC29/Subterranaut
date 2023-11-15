@@ -115,10 +115,10 @@ public class player : MonoBehaviour
         else speakbox.gameObject.SetActive(false);   
         if (speaktext) speaktext.text = dialogue;
 
-        if (SceneManager.GetActiveScene().buildIndex == 3) Light.SetActive(true);
+        if (SceneManager.GetActiveScene().buildIndex == 3|| SceneManager.GetActiveScene().buildIndex == 8) Light.SetActive(true);
         else Light.SetActive(false);
 
-        counttext.text = (tutorial?"wood":(minerals[mineraltype[currentworld]])) + " - " + mineralcount[currentworld] + ((haskey)?"\nKey - 1":"\nKeyranium - " + ((haskeyranium)?"1":"0"));
+        counttext.text = (tutorial?"Wood":(minerals[mineraltype[currentworld]])) + " - " + mineralcount[currentworld] + ((haskey)?"\nKey - 1":"\nKeyranium - " + ((haskeyranium)?"1":"0"));
 
         if (!(Input.GetAxisRaw("x") == 0 && Input.GetAxisRaw("y") == 0))//movement
         {
@@ -347,7 +347,6 @@ public class player : MonoBehaviour
             cavemusic[i] = Random.Range(0,5);
             cavetype[i] = Random.Range(0, 4); //you can change this part if you want just don't while loop crash the thing
             worldweapons[i] = Random.Range(0, 5);
-
 
             caves.Add(gd.generateCave(cavetype[currentworld], 0.005f * i));//change spawnrate as worldIndex increases
         }

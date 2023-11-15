@@ -132,6 +132,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   evil: 0
   playobj: {fileID: 0}
+  Light: {fileID: 7019341724237184034}
 --- !u!50 &-8319914091398765171
 Rigidbody2D:
   serializedVersion: 4

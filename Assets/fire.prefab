@@ -214,6 +214,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   evil: 1
   playobj: {fileID: 0}
+  Light: {fileID: 775652039646637368}
 --- !u!70 &2787068355219857331
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
