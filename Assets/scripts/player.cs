@@ -292,9 +292,13 @@ public class player : MonoBehaviour
             worldweapons[i] = Random.Range(0, 5);
         }
         weapons[0] = 0;
+        List<int> aaaa = new List<int>() { 1, 2, 3, 4 };
         for (int i = 0; i < 4; i++) 
         {
-            
+            int j = Random.Range(0, aaaa.Count);
+            worldweapons[i] = aaaa[j];
+            aaaa.RemoveAt(j);
         }
+        worldweapons[Random.Range(0, 4)] = 0;
     }
 }
