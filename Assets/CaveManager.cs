@@ -5,7 +5,7 @@ using UnityEngine;
 public class CaveManager : MonoBehaviour
 {
     // Start is called before the first frame update
-    public GameObject ore1, ore2, oreKey;
+    public GameObject ore1, ore2, oreKey, portalClosed, portalOpen;
     public Sprite darkdirt;
     public player player;
     public GenerateDungeons gd;
@@ -27,5 +27,14 @@ public class CaveManager : MonoBehaviour
         gd.visualizeCave(player.caves[currentworld][0], player.worldcolour[currentworld]);
         GameObject.Find("bgSquare").GetComponent<SpriteRenderer>().sprite=darkdirt;
         GameObject.Find("bgSquare").GetComponent<SpriteRenderer>().color=player.worldcolour[currentworld];
+        portalClosed.GetComponent<SpriteRenderer>().color=player.worldcolour[currentworld];
+        portalOpen.GetComponent<SpriteRenderer>().color=player.worldcolour[currentworld];
+
+        //if player inv contains key
+        //Instantiate(portalOpen, player.caves[currentworld][5][0], Quaternion.identity);
+        //else
+        Instantiate(portalClosed, player.caves[currentworld][5][0], Quaternion.identity);
+
+
     }
 }

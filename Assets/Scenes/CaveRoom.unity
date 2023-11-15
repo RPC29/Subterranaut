@@ -723,6 +723,8 @@ MonoBehaviour:
   ore1: {fileID: 5848470438401926800, guid: e5723e55215632e49a680a7bbb6918cd, type: 3}
   ore2: {fileID: 9184120453363966160, guid: 813acb69832bdbb4387c0f582ab13da6, type: 3}
   oreKey: {fileID: 2970821055940510791, guid: cdc0f4c25111230489f18999756ac3e2, type: 3}
+  portalClosed: {fileID: 2224793552859655094, guid: d980d723b43a4af45bcc3879d81fae29, type: 3}
+  portalOpen: {fileID: 544057356148079416, guid: 05099abf7e3f8c84084157a2add7dda3, type: 3}
   darkdirt: {fileID: 21300000, guid: c6d6663c104c1e542afed9ccf4de2585, type: 3}
   player: {fileID: 0}
   gd: {fileID: 298483361}

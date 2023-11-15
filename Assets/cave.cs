@@ -13,7 +13,7 @@ public class cave : MonoBehaviour
             if(entrance)
                 SceneManager.LoadScene(sceneName:"CaveRoom");
             else
-                SceneManager.LoadScene(sceneName:"Overworld");//based on currentWorld stuff
+                SceneManager.LoadScene(sceneName:"Overworld");//change based on currentWorld index and scene number
         }
     }
 }
