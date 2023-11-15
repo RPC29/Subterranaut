@@ -29,6 +29,14 @@ public class earth : MonoBehaviour
         transform.RotateAround(transform.parent.position, new Vector3(0, 0, 1), 240f * Time.deltaTime);
         if (evil && this.gameObject.GetComponent<CapsuleCollider2D>().IsTouchingLayers(LayerMask.GetMask("weapon"))) { alivetime = -999; }
         sprite.transform.rotation = Quaternion.Euler(0, 0, 0);
+        if (evil) sprite.gameObject.GetComponent<SpriteRenderer>().color = player.mineralcolourtype[player.currentworld];
+
+        else
+        {
+            Color a = Color.black;
+            ColorUtility.TryParseHtmlString(player.mineralcolours[player.weaponminerals[4]], out a);
+            sprite.GetComponent<SpriteRenderer>().color = a;
+        }
     }
 
     private void FixedUpdate()

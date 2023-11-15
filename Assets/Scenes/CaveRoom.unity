@@ -725,6 +725,7 @@ MonoBehaviour:
   oreKey: {fileID: 2970821055940510791, guid: cdc0f4c25111230489f18999756ac3e2, type: 3}
   portalClosed: {fileID: 2224793552859655094, guid: d980d723b43a4af45bcc3879d81fae29, type: 3}
   portalOpen: {fileID: 544057356148079416, guid: 05099abf7e3f8c84084157a2add7dda3, type: 3}
+  exit: {fileID: 4816458521673617515, guid: 4432a85935e48ac4faf685134c3e8673, type: 3}
   darkdirt: {fileID: 21300000, guid: c6d6663c104c1e542afed9ccf4de2585, type: 3}
   player: {fileID: 0}
   gd: {fileID: 298483361}

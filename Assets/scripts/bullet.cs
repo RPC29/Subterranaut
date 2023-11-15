@@ -14,6 +14,10 @@ public class bullet : MonoBehaviour
         speed = 5f;
         bulobj = this.gameObject;
         bulobj.transform.parent = null;
+
+        Color tempcol = Color.black;
+        ColorUtility.TryParseHtmlString(player.mineralcolours[player.weaponminerals[2]], out tempcol);
+        this.gameObject.GetComponent<SpriteRenderer>().color = tempcol;
     }
 
     // Update is called once per frame

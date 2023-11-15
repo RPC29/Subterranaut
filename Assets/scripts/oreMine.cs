@@ -5,9 +5,13 @@ using UnityEngine;
 public class oreMine : MonoBehaviour
 {
     // Start is called before the first frame update
+    private void Start()
+    {
+        if (gameObject.name.StartsWith("keyranium") && (player.haskeyranium || player.haskey)) Destroy(this.gameObject);
+    }
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(LayerMask.LayerToName(other.gameObject.layer)=="weapon"){
+        if (other.gameObject.layer == 6) { 
             if(gameObject.name.StartsWith("keyranium")){
                 //playerInv.add("keyranium");
                 //prompt("+1 Keyranium")

@@ -26,7 +26,7 @@ public class enemy : MonoBehaviour
         eneobj = this.gameObject;
         enecol = eneobj.GetComponent<Rigidbody2D>();
         playobj = GameObject.Find("Player");
-        health = 50;
+        health = 15 * player.currentworld;
         behaviour = Random.Range(0, 2);
         enemyspeed = 5f;
         offended = false;
@@ -83,18 +83,6 @@ public class enemy : MonoBehaviour
                 if (behaviour == 1)
                 {
                     enecol.velocity =  Vector3.MoveTowards(eneobj.transform.position, playobj.transform.position, 2f * Time.deltaTime) - eneobj.transform.position;
-                }
-            }
-            if (type == 3)
-            {
-                if (behaviour == 0)
-                {
-                    enecol.velocity =  Vector3.MoveTowards(eneobj.transform.position, playobj.transform.position, 1f * Time.deltaTime) - eneobj.transform.position;
-                }
-                if (behaviour == 1)
-                {
-                    if (!(ticks % 100 < 60 && ticks % 100 > 40)) enecol.velocity =  Vector3.MoveTowards(eneobj.transform.position, playobj.transform.position, 1f * Time.deltaTime) - eneobj.transform.position;
-                    else enecol.velocity = Vector2.zero;
                 }
             }
 
@@ -156,17 +144,6 @@ public class enemy : MonoBehaviour
                     if (ticks % 50 == 0) GameObject.Instantiate(earth, this.transform);
                 }
             }
-            if (type == 3)
-            {
-                if (behaviour == 0)
-                {
-
-                }
-                if (behaviour == 1)
-                {
-                    if (ticks % 100 == 40) GameObject.Instantiate(fire, this.transform);
-                }
-            }
         }
     }
 
@@ -177,6 +154,7 @@ public class enemy : MonoBehaviour
             health -= ((power)(collision.gameObject.GetComponent("power"))).strength;
             paintimer = ((power)(collision.gameObject.GetComponent("power"))).strength * 3;
             eneobj.GetComponent<SpriteRenderer>().color = new Color(0.8f, 0, 0, 1);
+            offended = true;
         }
     }
 }

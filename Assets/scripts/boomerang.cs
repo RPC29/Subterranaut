@@ -17,6 +17,10 @@ public class boomerang : MonoBehaviour
         boomobj = this.gameObject;
         boomobj.transform.parent = null;
         playobj = GameObject.Find("Player");
+
+        Color tempcol = Color.black;
+        ColorUtility.TryParseHtmlString(player.mineralcolours[player.weaponminerals[3]], out tempcol);
+        this.gameObject.GetComponent<SpriteRenderer>().color = tempcol;
     }
 
     // Update is called once per frame

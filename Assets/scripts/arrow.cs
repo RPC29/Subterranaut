@@ -14,6 +14,10 @@ public class arrow : MonoBehaviour
         speed = player.laststate * 7f/4f;
         arrobj = this.gameObject;
         arrobj.transform.parent = null;
+
+        Color tempcol = Color.black;
+        ColorUtility.TryParseHtmlString(player.mineralcolours[player.weaponminerals[1]], out tempcol);
+        this.gameObject.GetComponent<SpriteRenderer>().color = tempcol;
     }
 
     // Update is called once per frame

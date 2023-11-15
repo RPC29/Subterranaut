@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Tilemaps;
 
@@ -16,26 +17,35 @@ public class player : MonoBehaviour
     public static int[] mineraltype = { 0, 0, 0, 0 }; //decides mineral types for every world
     public static Color[] mineralcolourtype = { Color.black, Color.black, Color.black, Color.black }; //overworld colours for every world
     public static Color[] worldcolour = { Color.black, Color.black, Color.black, Color.black }; //overworld colours for every world
+    public static Color[] watercolour = { Color.black, Color.black, Color.black, Color.black }; //overworld colours for every world
     public static Color[] enemycolour = { Color.black, Color.black, Color.black, Color.black }; //enemy colours for every world
     public static int[] enemylook = { 0, 0, 0, 0 };
     public static int[] enemybehaviour = { 0, 0, 0, 0 }; //for melee
     public static int[] renemybehaviour = { 0, 0, 0, 0 }; //for ranged
+    public static int[] worldlayouts = { 0, 0, 0, 0 }; //which overworlds
     public static int[] weapons = { 0, 0, 0, 0 }; //weapons you have rn
-    public static int[] weaponminerals = { 0, 0, 0, 0 }; //the minerals those weapons are made out of
+    public static int[] weaponminerals = { 0, 0, 0, 0, 0 }; //the minerals those weapons are made out of
     public static int[] worldweapons = { 0, 0, 0, 0 }; //weapons in every world
+    public static int[] worldmusic = { 0, 0, 0, 0 }; //weapons in every world
+    public static int[] cavemusic = { 0, 0, 0, 0 }; //weapons in every world
+    public static bool[] recievedweapons = { false, false, false, false };
     public static int weaponcount = 1;
 
     public static int currentworld = 0;
 
     public List<List<List<Vector2>>> caves = new List<List<List<Vector2>>>();
 
+    public static bool tutorial;
     public static int[] mineralcount = { 0, 0, 0, 0 };
     public static bool haskeyranium = false;
+    public static bool haskey = false;
+    
 
     public Text[] weaponshow;
     public Slider healthbar;
     public Image speakbox;
     public Text speaktext;
+    public Text counttext;
     public static bool speaking;
     public static string dialogue;
 
@@ -48,26 +58,28 @@ public class player : MonoBehaviour
     Animator playerAnim;
     
     int weapon = 0;
+    int weaponindex = 0;
     // 0 - sword, 1 - bow, 2 - gun, 3 - boomerang, 4 - magic
     public static string[] weaponnames = { "Sword", "Bow", "Gun", "Boomerang", "Magic" };
     int swordatking = 0;
     int swordcooldown = 0;
     int bowatking = 0;
     int bowstage = 0;
-    bool betterbow = false;
+    public static bool bettersword = false;
     public static int laststate = 0;
     int reloadtimer = 0;
     int reloads = 6;
     int boomerangs = 2;
-    int magictype = 2; //0 - fire, 1 - lightning, 2 - earth
+    public static int magictype = 0; //0 - fire, 1 - lightning, 2 - earth
     int magiccooldown = 0;
     public GameObject arow;
     public GameObject bulet;
     public GameObject boomer;
     public GameObject firey, elecy, earthy;
+    public GameObject Light;
     public Camera cam;
     int paintimer = -1;
-    public int health;
+    public float health;
     public GenerateDungeons gd;
 
     // Start is called before the first frame update
@@ -86,7 +98,13 @@ public class player : MonoBehaviour
         boomerangs = 2;
         GameObject.DontDestroyOnLoad(this.gameObject);
 
-        betterbow = true; //change this
+        tutorial = true;
+
+        SceneManager.LoadScene(2);
+
+        weaponcount = 1;
+
+        bettersword = false;
     }
 
     // Update is called once per frame
@@ -94,9 +112,13 @@ public class player : MonoBehaviour
     {
         healthbar.value = 0.5f + ((float)health/200f);
         if (speaking) speakbox.gameObject.SetActive(true);
-        else speakbox.gameObject.SetActive(false);
-
+        else speakbox.gameObject.SetActive(false);   
         if (speaktext) speaktext.text = dialogue;
+
+        if (SceneManager.GetActiveScene().buildIndex == 3) Light.SetActive(true);
+        else Light.SetActive(false);
+
+        counttext.text = (tutorial?"wood":(minerals[mineraltype[currentworld]])) + " - " + mineralcount[currentworld] + ((haskey)?"\nKey - 1":"\nKeyranium - " + ((haskeyranium)?"1":"0"));
 
         if (!(Input.GetAxisRaw("x") == 0 && Input.GetAxisRaw("y") == 0))//movement
         {
@@ -123,12 +145,18 @@ public class player : MonoBehaviour
         if (paintimer == -1)playspr.color = new Color(1,1,1,1); //reset player color
 
         //sword
-        if (Input.GetMouseButtonDown(0) && weapon == 0 && swordcooldown < 1)
+        if (Input.GetMouseButtonDown(0) && weapon == 0 && (swordcooldown < 1 || bettersword))
         {
             swordatking = 20;
             swordcooldown = 20;
             lookAt2D(sword, cam.ScreenToWorldPoint(Input.mousePosition));
             sword.transform.rotation = Quaternion.Euler(0, 0, sword.transform.rotation.eulerAngles.z - 30);
+            {
+                Color tempcol = Color.black;
+                ColorUtility.TryParseHtmlString(player.mineralcolours[player.weaponminerals[0]], out tempcol);
+                sword.GetComponent<SpriteRenderer>().color = tempcol;
+            }
+            if (bettersword) sword.GetComponent<power>().strength = 20;
         }
 
         //bow
@@ -148,6 +176,11 @@ public class player : MonoBehaviour
         {
             bow.SetActive(true);
             lookAt2D(bow, cam.ScreenToWorldPoint(Input.mousePosition));
+            {
+                Color tempcol = Color.black;
+                ColorUtility.TryParseHtmlString(player.mineralcolours[player.weaponminerals[1]], out tempcol);
+                bow.GetComponent<SpriteRenderer>().color = tempcol;
+            }
         }
         else bow.SetActive(false);
 
@@ -167,10 +200,16 @@ public class player : MonoBehaviour
         }
         if (weapon == 2)
         {
-            if (reloadtimer > 0) gun.SetActive(false);
-            else gun.SetActive(true);
+
+            gun.SetActive(true);
             lookAt2D(gun, cam.ScreenToWorldPoint(Input.mousePosition));
             gun.transform.localScale = (gun.transform.rotation.eulerAngles.z < 180) ? new Vector3(-1,1,1) :  new Vector3(1, 1, 1);
+            {
+                Color tempcol = Color.black;
+                ColorUtility.TryParseHtmlString(player.mineralcolours[player.weaponminerals[2]], out tempcol);
+                gun.GetComponent<SpriteRenderer>().color = tempcol;
+                if (reloadtimer > 0) gun.GetComponent<SpriteRenderer>().color = tempcol - new Color(0.1f, 0.1f, 0.1f, 0);
+            }
         }
         else gun.SetActive(false);
 
@@ -185,9 +224,14 @@ public class player : MonoBehaviour
         }
         if (weapon == 3)
         {
-            if (boomerangs < 0) boomeranger.SetActive(false);
-            else boomeranger.SetActive(true);
+            boomeranger.SetActive(true);
             lookAt2D(boomeranger, cam.ScreenToWorldPoint(Input.mousePosition));
+            {
+                Color tempcol = Color.black;
+                ColorUtility.TryParseHtmlString(player.mineralcolours[player.weaponminerals[3]], out tempcol);
+                boomeranger.GetComponent<SpriteRenderer>().color = tempcol;
+                if (boomerangs < 1) boomeranger.GetComponent<SpriteRenderer>().color = tempcol - new Color(0.1f, 0.1f, 0.1f, 0);
+            }
         }
         else boomeranger.SetActive(false);
 
@@ -205,23 +249,33 @@ public class player : MonoBehaviour
             //if (magiccooldown > 0) spell.SetActive(false);
             spell.SetActive(true);
             lookAt2D(spell, cam.ScreenToWorldPoint(Input.mousePosition));
+            {
+                Color tempcol = Color.black;
+                ColorUtility.TryParseHtmlString(player.mineralcolours[player.weaponminerals[4]], out tempcol);
+                spell.GetComponent<SpriteRenderer>().color = tempcol;
+            }
         }
         else spell.SetActive(false);
 
 
-        if (Input.GetMouseButtonDown(1)) weapon=((weapon+1)%5);
+        if (Input.GetMouseButtonDown(1)) weapon=weapons[((++weaponindex)%weaponcount)];
     }
     private void FixedUpdate()
     {
 
         if (swordatking > 0) swordatking--;
+        if (bettersword) if (swordatking > 0) swordatking--;
         if (swordcooldown > 0) swordcooldown--;
         if (reloadtimer > 0) reloadtimer--;
         if (magiccooldown > 0) magiccooldown--;
-        if (swordatking > 0) sword.transform.rotation = Quaternion.Euler(0, 0, sword.transform.rotation.eulerAngles.z + 3);
+        if (swordatking > 0) sword.transform.rotation = Quaternion.Euler(0, 0, sword.transform.rotation.eulerAngles.z + 6);
         if (swordatking > 0) sword.SetActive(true);
         else sword.SetActive(false);
 
+        if ((Input.GetAxisRaw("x") == 0 && Input.GetAxisRaw("y") == 0))
+        {
+            health = Mathf.Clamp(health + 0.1f, 0f, 100f);
+        }
 
         if (bowatking > 0 && Input.GetMouseButton(0) && weapon == 1)
         {
@@ -278,18 +332,24 @@ public class player : MonoBehaviour
 
         for (int i = 0; i < 4; i++) 
         {
-            caves.Add(gd.generateCave(cavetype[currentworld],0.01f));//change spawnrate as worldIndex increases
 
             mineraltype[i] = Random.Range(1, minerals.Length);
             ColorUtility.TryParseHtmlString(mineralcolours[mineraltype[i]], out mineralcolourtype[i]);
             ColorUtility.TryParseHtmlString(colours[Random.Range(0, colours.Length)], out worldcolour[i]);
+            ColorUtility.TryParseHtmlString(colours[Random.Range(0, colours.Length)], out watercolour[i]);
             ColorUtility.TryParseHtmlString(colours[Random.Range(0, colours.Length)], out enemycolour[i]);
 
             enemylook[i] = Random.Range(0,6);
-            enemybehaviour[i] = Random.Range(0,4);
-            renemybehaviour[i] = Random.Range(0,4);
-            cavetype[i] = Random.Range(0, 3); //you can change this part if you want just don't while loop crash the thing
+            enemybehaviour[i] = Random.Range(0,3);
+            renemybehaviour[i] = Random.Range(0,3);
+            worldlayouts[i] = Random.Range(0,4);
+            worldmusic[i] = Random.Range(0,5);
+            cavemusic[i] = Random.Range(0,5);
+            cavetype[i] = Random.Range(0, 4); //you can change this part if you want just don't while loop crash the thing
             worldweapons[i] = Random.Range(0, 5);
+
+
+            caves.Add(gd.generateCave(cavetype[currentworld], 0.005f * i));//change spawnrate as worldIndex increases
         }
         weapons[0] = 0;
         List<int> aaaa = new List<int>() { 1, 2, 3, 4 };
@@ -300,5 +360,22 @@ public class player : MonoBehaviour
             aaaa.RemoveAt(j);
         }
         worldweapons[Random.Range(0, 4)] = 0;
+    }
+
+    public static void OfferWeapon()
+    {
+        if (!recievedweapons[currentworld])
+        {
+            if (worldweapons[currentworld] != 0)
+            {
+                weapons[weaponcount] = worldweapons[currentworld];
+                weaponcount++;
+                if (worldweapons[currentworld] == 4) magictype = renemybehaviour[currentworld];
+                recievedweapons[currentworld] = true;
+            }
+            else bettersword = true;
+            weaponminerals[worldweapons[currentworld]] = mineraltype[currentworld];
+            
+        }
     }
 }
