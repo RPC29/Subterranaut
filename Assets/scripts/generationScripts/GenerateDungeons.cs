@@ -9,6 +9,9 @@ using UnityEngine.UIElements;
 using Random=UnityEngine.Random;
 public class GenerateDungeons : MonoBehaviour
 {
+
+    public GameObject blub;
+
     [Header("Random Walker")]
     public int iterations = 100;
     public int walkLength = 20;
@@ -25,7 +28,7 @@ public class GenerateDungeons : MonoBehaviour
     public int offset=1;
     public bool randomWalkRooms = false;
     public bool thickCorridor = false;
-
+    public bool caveScene;
 
     [Header("Tile Stuff")]
     public Tilemap floorTM;
@@ -40,10 +43,17 @@ public class GenerateDungeons : MonoBehaviour
         new Vector2(0,-1),//down
         new Vector2(-1,0)//left
     };
+    public void Awake(){
+        if(caveScene){
+            floorTM=GameObject.Find("Grid/Floor").GetComponent<Tilemap>();
+            wallTM=GameObject.Find("Grid/Walls").GetComponent<Tilemap>();
 
-    public List<List<Vector2>> generateCave(bool randomW, bool thick){
+        }
+    }
+    public List<List<Vector2>> generateCave(int type, float enemyChance){
         List<BoundsInt> roomL = null;
         List<List<Vector2>> everything = new List<List<Vector2>>();
+        List<Vector2> ores = new List<Vector2>();
         int c = 0;
         do{
             if(c++>100)break;
@@ -51,41 +61,71 @@ public class GenerateDungeons : MonoBehaviour
         }
         while(roomL.Count<=minRoomNum);
         HashSet<Vector2> floors = new HashSet<Vector2>();
-        if(!randomW){
-            foreach(var room in roomL) {
+        HashSet<Vector2> roomFloors = new HashSet<Vector2>();
+
+        foreach(var room in roomL){
+            if(type==0||type==1){//boxed
                 for(int j = offset; j<room.size.x-offset; j++)
                     for(int i = offset; i<room.size.y-offset; i++)
-                        floors.Add((Vector2Int)room.min+new Vector2(j,i));
+                        roomFloors.Add((Vector2Int)room.min+new Vector2(j,i));
             }
-        }
-        else{
-            foreach(var room in roomL){
+            else{
                 var center = (Vector2Int)Vector3Int.RoundToInt(room.center);
                 foreach(var floor in generateRoom(center, iterations, walkLength)){
                     if(floor.x >= room.xMin+offset && floor.x<=room.xMax-offset && floor.y>=room.yMin+offset && floor.y<=room.yMax+offset)
-                        floors.Add(floor);
+                        roomFloors.Add(floor);
                 }
-
             }
+                            
+            floors.UnionWith(roomFloors);
+            for(int i = 0; i<Mathf.Round(Random.Range(1,3)); i++)
+                ores.Add(roomFloors.ElementAt(Random.Range(0,roomFloors.Count)));
+            roomFloors.Clear();
         }
+        
+
+
+
 
         List<Vector2Int> roomC = new List<Vector2Int>();
         foreach(var room in roomL)
             roomC.Add((Vector2Int)Vector3Int.RoundToInt(room.center));
-        
+        Vector2 keyOre = roomC[Random.Range(0, roomC.Count)];
         HashSet<Vector2> corridors = new HashSet<Vector2>();
         var currRoomC = roomC[Random.Range(0,roomC.Count)];
+        Vector2 firstRoom = currRoomC;
         roomC.Remove(currRoomC);
+        
         while(roomC.Count>0){
             Vector2Int closest = findClosest(currRoomC, roomC);
             roomC.Remove(closest);
-            corridors.UnionWith(createCorridor(currRoomC, closest, thick));
+            corridors.UnionWith(createCorridor(currRoomC, closest, (type==1||type==3)));
             currRoomC=closest;
         }
         floors.UnionWith(corridors);
-        everything.Add(floors.ToList<Vector2>());
+        List<Vector2> enemies = new List<Vector2>();
+        foreach(var floor in floors)
+            if(Random.value<=enemyChance)
+                enemies.Add(floor);
+        
+        
+        everything.Add(floors.ToList<Vector2>()); // all floors
+        everything.Add(enemies); // positions of enemies
+        everything.Add(ores); // positions of ores
+        everything.Add(new List<Vector2>(){keyOre}); //position of keyore
+        everything.Add(new List<Vector2>(){firstRoom}); // starting room
+        everything.Add(new List<Vector2>(){currRoomC}); // portal room
+
         //add enemy spawn list and ore position list here
         return everything;
+    }
+
+    public void visualizeCave(List<Vector2> floors, Color col){
+        floorTM.color=col;
+        wallTM.color=col;
+
+        visualizeFloor(floors);
+        createWalls(floors);
     }
 
 
@@ -133,7 +173,7 @@ public class GenerateDungeons : MonoBehaviour
     }
 
 
-    public void createWalls(HashSet<Vector2> floorPos){
+    public void createWalls(IEnumerable<Vector2> floorPos){
         HashSet<Vector2> wallPositions = new HashSet<Vector2>();
         foreach(var pos in floorPos){
             foreach(var dir in dirs){
@@ -174,53 +214,6 @@ public class GenerateDungeons : MonoBehaviour
     }
 
 
-    public void generateRooms(){
-        List<BoundsInt> roomL = null;
-        int c = 0;
-        do{
-            if(c++>100)break;
-            roomL=BSP(new BoundsInt(new Vector3Int(-dunWidth/2, -dunHeight/2, 0), new Vector3Int(dunWidth, dunHeight, 0)));
-        }
-        while(roomL.Count<=minRoomNum);
-        HashSet<Vector2> floors = new HashSet<Vector2>();
-        if(!randomWalkRooms){
-            foreach(var room in roomL) {
-                for(int j = offset; j<room.size.x-offset; j++)
-                    for(int i = offset; i<room.size.y-offset; i++)
-                        floors.Add((Vector2Int)room.min+new Vector2(j,i));
-            }
-        }
-        else{
-            foreach(var room in roomL){
-                var center = (Vector2Int)Vector3Int.RoundToInt(room.center);
-                foreach(var floor in generateRoom(center, iterations, walkLength)){
-                    if(floor.x >= room.xMin+offset && floor.x<=room.xMax-offset && floor.y>=room.yMin+offset && floor.y<=room.yMax+offset)
-                        floors.Add(floor);
-                }
-
-            }
-        }
-
-        List<Vector2Int> roomC = new List<Vector2Int>();
-        foreach(var room in roomL)
-            roomC.Add((Vector2Int)Vector3Int.RoundToInt(room.center));
-        
-        HashSet<Vector2> corridors = new HashSet<Vector2>();
-        var currRoomC = roomC[Random.Range(0,roomC.Count)];
-        roomC.Remove(currRoomC);
-        while(roomC.Count>0){
-            Vector2Int closest = findClosest(currRoomC, roomC);
-            roomC.Remove(closest);
-            corridors.UnionWith(createCorridor(currRoomC, closest, thickCorridor));
-            currRoomC=closest;
-        }
-        floors.UnionWith(corridors);
-         
-
-        visualizeFloor(floors);
-        createWalls(floors);
-    }
-
     public Vector2Int findClosest(Vector2Int currRoomC, List<Vector2Int> roomC){
         Vector2Int closest = Vector2Int.zero;
         float length = float.MaxValue;
@@ -257,6 +250,13 @@ public class GenerateDungeons : MonoBehaviour
             }
         }
         return corridor;
+    }
+
+
+    public void addEnemies(List<Vector2> list){
+        foreach(Vector2 pos in list){
+            Instantiate(blub, new Vector3(pos.x, pos.y, 0), Quaternion.identity);
+        }
     }
 
 

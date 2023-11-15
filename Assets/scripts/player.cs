@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class player : MonoBehaviour
 {
@@ -24,14 +26,13 @@ public class player : MonoBehaviour
 
     public static int currentworld = 0;
 
-    [HideInInspector]
-    public List<List<List<Vector2>>> caves;
+    public List<List<List<Vector2>>> caves = new List<List<List<Vector2>>>();
 
     GameObject playobj;
     public Rigidbody2D playbody;
     public GameObject sword, bow, gun, boomeranger, spell;
     public SpriteRenderer playspr, bowspr;
-    public Sprite bow1, bow2, bow3, bow4;
+    public Sprite bow1, bow2, bow3, bow4, dirt;
     public int playerSpeed;
     Animator playerAnim;
     
@@ -60,27 +61,26 @@ public class player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        gd=GetComponentInChildren<GenerateDungeons>();
         RandomizeWorld();
 
-        Random.InitState(10);
+        // Random.InitState(10);
         playobj = gameObject;
         health = 100;
         playerAnim = GetComponent<Animator>();
-        gd=GameObject.Find("DungeonGenerator").GetComponent<GenerateDungeons>();
 
-        for(int i = 0; i<4; i++)
-            caves.Add(gd.generateCave(Random.value<0.5f,Random.value<0.5f));
+        // the stuff above goes inside the onawake function of cave scene
         reloads = 6;
         boomerangs = 2;
         GameObject.DontDestroyOnLoad(this.gameObject);
+
         betterbow = true; //change this
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))gd.generateRooms();
-        if(Input.GetKeyDown(KeyCode.Backspace))gd.clearTiles();
+
 
         if (!(Input.GetAxisRaw("x") == 0 && Input.GetAxisRaw("y") == 0))//movement
         {
@@ -96,7 +96,11 @@ public class player : MonoBehaviour
         }
 
         
-        if (health < 1) Destroy(this.gameObject); //health check
+        if (health < 1) {
+            //restart function --------------------------------------
+            playspr.color = new Color(0.6f,0,0,1);
+            this.enabled=false;
+        } //health check
 
 
         if (paintimer >= 0) paintimer--;
@@ -255,16 +259,16 @@ public class player : MonoBehaviour
 
     private void RandomizeWorld() 
     {
+
         for (int i = 0; i < 4; i++) 
         {
+            caves.Add(gd.generateCave(cavetype[currentworld],0.01f));//change spawnrate as worldIndex increases
+
             mineraltype[i] = Random.Range(1, minerals.Length);
-            Color b = Color.black;
-            ColorUtility.TryParseHtmlString(mineralcolours[mineraltype[i]], out b);
-            mineralcolourtype[i] = b;
-            ColorUtility.TryParseHtmlString(colours[Random.Range(0, colours.Length)], out b);
-            worldcolour[i] = b;
-            ColorUtility.TryParseHtmlString(colours[Random.Range(0, colours.Length)], out b);
-            enemycolour[i] = b;
+            ColorUtility.TryParseHtmlString(mineralcolours[mineraltype[i]], out mineralcolourtype[i]);
+            ColorUtility.TryParseHtmlString(colours[Random.Range(0, colours.Length)], out worldcolour[i]);
+            ColorUtility.TryParseHtmlString(colours[Random.Range(0, colours.Length)], out enemycolour[i]);
+
             enemylook[i] = Random.Range(0,6);
             enemybehaviour[i] = Random.Range(0,4);
             renemybehaviour[i] = Random.Range(0,4);
