@@ -11,7 +11,7 @@ public class bullet : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        speed = 5f;
+        speed = 7f;
         bulobj = this.gameObject;
         bulobj.transform.parent = null;
 
@@ -26,6 +26,6 @@ public class bullet : MonoBehaviour
         bulobj.transform.position += bulobj.transform.up * speed/10f;
         speed -= 0.1f;
         if (speed < 0.1) Destroy(this.gameObject);
-        this.gameObject.GetComponent<power>().strength = (int)speed * 2;
+        this.gameObject.GetComponent<power>().strength = (int)speed * 3;
     }
 }

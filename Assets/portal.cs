@@ -14,16 +14,19 @@ public class portal : MonoBehaviour
         {
             player.tutorial = false;
             SceneManager.LoadScene(player.worldlayouts[player.currentworld] + 4);
+            player.haskeyranium = false;
+            player.haskey = false;
+            return;
+        }
+        if (player.haskey && player.currentworld == 3)
+        {
+            Destroy(GameObject.Find("Musicer"));
+            Destroy(GameObject.Find("Player"));
+            SceneManager.LoadScene(11);
+            return;
         }
         if (player.haskey)
-        {
-            
-            if (player.currentworld == 3)
-            {
-                Destroy(GameObject.Find("Musicer"));
-                Destroy(GameObject.Find("Player"));
-                SceneManager.LoadScene(11);
-            }
+        { 
             player.currentworld++;
             SceneManager.LoadScene(player.worldlayouts[player.currentworld] + 4);
             player.haskeyranium = false;

@@ -26,6 +26,6 @@ public class arrow : MonoBehaviour
         arrobj.transform.position += arrobj.transform.up * speed/10f;
         speed -= 0.1f;
         if (speed < 0.1) Destroy(this.gameObject);
-        this.gameObject.GetComponent<power>().strength = (int)speed * 2;
+        this.gameObject.GetComponent<power>().strength = (int)speed * 3;
     }
 }

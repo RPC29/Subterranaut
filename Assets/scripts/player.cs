@@ -89,6 +89,7 @@ public class player : MonoBehaviour
         weaponcount = 1;
         weaponminerals[4] = 0;
 
+        currentworld = 0;
 
         gd=GetComponentInChildren<GenerateDungeons>();
         RandomizeWorld();
@@ -268,6 +269,7 @@ public class player : MonoBehaviour
 
 
         if (Input.GetMouseButtonDown(1)) weapon=weapons[((++weaponindex)%weaponcount)];
+        Debug.Log(currentworld);
     }
     private void FixedUpdate()
     {
@@ -283,7 +285,7 @@ public class player : MonoBehaviour
 
         if ((Input.GetAxisRaw("x") == 0 && Input.GetAxisRaw("y") == 0))
         {
-            health = Mathf.Clamp(health + 0.1f, 0f, 100f);
+            health = Mathf.Clamp(health + 0.2f, 0f, 100f);
         }
 
         if (bowatking > 0 && Input.GetMouseButton(0) && weapon == 1)
@@ -359,7 +361,8 @@ public class player : MonoBehaviour
             recievedweapons[i] = false;
             weaponminerals[i] = 0;
             weapons[i] = 0;
-            caves.Add(gd.generateCave(cavetype[currentworld], 0.005f * i));//change spawnrate as worldIndex increases
+            mineralcount[i] = 0;
+            caves.Add(gd.generateCave(cavetype[currentworld], 0.01f * (i+1)));//change spawnrate as worldIndex increases
         }
         weapons[0] = 0;
         List<int> aaaa = new List<int>() { 1, 2, 3, 4 };

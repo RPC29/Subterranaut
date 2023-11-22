@@ -29,7 +29,7 @@ public class boomerang : MonoBehaviour
         boomobj.transform.position += boomobj.transform.up * speed/10f;
         speed -= 0.1f;
         if (speed < 0) boomobj.transform.position = Vector3.MoveTowards(boomobj.transform.position, playobj.transform.position, -speed);
-        this.gameObject.GetComponent<power>().strength = Mathf.Abs((int)speed * 2);
+        this.gameObject.GetComponent<power>().strength = Mathf.Abs((int)speed * 3);
     }
 
     private void Update()

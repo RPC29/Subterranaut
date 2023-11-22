@@ -26,7 +26,7 @@ public class enemy : MonoBehaviour
         eneobj = this.gameObject;
         enecol = eneobj.GetComponent<Rigidbody2D>();
         playobj = GameObject.Find("Player");
-        health = 15 * player.currentworld;
+        health = 15 * (player.currentworld + 1);
         behaviour = Random.Range(0, 2);
         enemyspeed = 5f;
         offended = false;
